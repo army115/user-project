@@ -14,10 +14,15 @@ class _RegisterPageState extends State<RegisterPage> {
   final _formkey = GlobalKey<FormState>();
   final _uuser = TextEditingController();
   final _upass = TextEditingController();
+  final _conpass = TextEditingController();
   final _uname = TextEditingController();
   final _ulastname = TextEditingController();
   final _utel = TextEditingController();
   final _uemail = TextEditingController();
+
+  bool redEyepass = true;
+  bool redEyecon = true;
+  var confirmPass;
 
 //connect server api
   void _register(Map<String, dynamic> values) async {
@@ -95,12 +100,14 @@ class _RegisterPageState extends State<RegisterPage> {
                               SizedBox(height: 10),
                               password(),
                               SizedBox(height: 10),
+                              conpass(),
+                              SizedBox(height: 10),
                               uname(),
                               SizedBox(height: 10),
                               ulastname(),
                               SizedBox(height: 10),
                               phone(),
-                              SizedBox(height: 10),
+                              SizedBox(height: 5),
                               email(),
                               SizedBox(height: 40),
                             ],
@@ -146,20 +153,79 @@ class _RegisterPageState extends State<RegisterPage> {
   Widget password() {
     return TextFormField(
       controller: _upass,
+      obscureText: redEyepass,
       decoration: InputDecoration(
         contentPadding: EdgeInsets.fromLTRB(10.0, 10.0, 10.0, 20.0),
         labelText: 'รหัสผ่าน',
         hintText: 'กรอกรหัสผ่าน อย่างน้อย 8 ตัว',
+        suffixIcon: IconButton(
+          onPressed: () {
+            setState(() {
+              redEyepass = !redEyepass;
+            });
+          },
+          icon: redEyepass
+              ? Icon(
+                  Icons.visibility,
+                  // color: MyConstant.dark,
+                )
+              : Icon(
+                  Icons.visibility_off,
+                  // color: MyConstant.dark,
+                ),
+        ),
         prefixIcon: Icon(Icons.vpn_key, size: 25),
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(5.0),
         ),
       ),
       validator: (values) {
+        confirmPass = values;
         if (values.isEmpty) {
           return 'กรุณากรอกรหัสผ่าน';
         } else if (values.length < 8) {
           return "รหัสผ่านอย่างน้อย 8 ตัว";
+        } else {
+          return null;
+        }
+      },
+    );
+  }
+
+    Widget conpass() {
+    return TextFormField(
+      controller: _conpass,
+      obscureText: redEyecon,
+      decoration: InputDecoration(
+        contentPadding: EdgeInsets.fromLTRB(10.0, 10.0, 10.0, 20.0),
+        labelText: 'ยืนยันรหัสผ่าน',
+        hintText: 'กรุณากรอกรหัสผ่านให้ตรงกัน',
+        prefixIcon: Icon(Icons.vpn_key_outlined, size: 25),
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(5.0),
+        ),
+        suffixIcon: IconButton(
+          onPressed: () {
+            setState(() {
+              redEyecon = !redEyecon;
+            });
+          },
+          icon: redEyecon
+              ? Icon(
+                  Icons.visibility,
+                  // color: MyConstant.dark,
+                )
+              : Icon(
+                  Icons.visibility_off,
+                  // color: MyConstant.dark,
+                ),
+        ),
+      ),
+      validator: (values) {
+        if (values.isEmpty) {
+          return 'กรุณากรอกรหัสผ่าน';
+        } else if (values != confirmPass) {
+          return "รหัสผ่านไม่ตรงกัน";
         } else {
           return null;
         }
@@ -268,7 +334,7 @@ class _RegisterPageState extends State<RegisterPage> {
           if (_formkey.currentState.validate()) {
             Map<String, dynamic> valuse = Map();
             valuse['u_user'] = _uuser.text;
-            valuse['u_pass'] = _upass.text;
+            valuse['u_pass'] = _conpass.text;
             valuse['u_name'] = _uname.text;
             valuse['u_lastname'] = _ulastname.text;
             valuse['u_email'] = _uemail.text;

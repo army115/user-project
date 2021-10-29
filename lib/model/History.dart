@@ -30,7 +30,7 @@ class Hisuser {
   String payDate;
   String payTime;
   int payNum;
-  int paySale;
+  double paySale;
   String payBank;
   int orId;
   String orDate;
